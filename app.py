@@ -52,39 +52,15 @@ class EmailNotificationSystem:
     def load_smtp_credentials(self):
         """Load SMTP credentials from api.txt file"""
         try:
-            with open("api.txt", "r") as f:
-                content = f.read()
-
-                # Extract SMTP configuration
-                self.sender_email = self.extract_value(content, 'SENDER_EMAIL')
-                self.sender_password = self.extract_value(content, 'SENDER_PASSWORD')
-
-                # Validate required credentials
-                if not all([self.sender_email, self.sender_password]):
-                    # Try env vars as fallback
-                    self.sender_email = os.getenv('SENDER_EMAIL')
-                    self.sender_password = os.getenv('SENDER_PASSWORD')
-
-                    if not all([self.sender_email, self.sender_password]):
-                        st.warning("⚠️ SMTP credentials incomplete in api.txt. Email alerts will be disabled.")
-
-        except FileNotFoundError:
-            # Try env vars as fallback
             self.sender_email = os.getenv('SENDER_EMAIL')
             self.sender_password = os.getenv('SENDER_PASSWORD')
+
             if not all([self.sender_email, self.sender_password]):
-                st.warning("⚠️ api.txt file not found. Email alerts disabled.")
+                st.warning("⚠️ SMTP credentials incomplete . Email alerts will be disabled.")
+
         except Exception as e:
             st.error(f"❌ Error loading SMTP credentials: {str(e)}")
 
-    def extract_value(self, content, key):
-        """Extract value from api.txt content"""
-        if f'{key}="' in content:
-            try:
-                return content.split(f'{key}="')[1].split('"')[0]
-            except IndexError:
-                return None
-        return None
 
     def send_alert(self, to_email, subject, body, pdf_attachments=None):
         """
@@ -93,11 +69,6 @@ class EmailNotificationSystem:
         """
         if not to_email:
             st.warning("⚠️ No recipient email provided")
-            return False
-
-        # Check if SMTP credentials are available
-        if not all([self.sender_email, self.sender_password]):
-            st.error("❌ SMTP credentials not configured. Please check api.txt file.")
             return False
 
         try:
@@ -231,14 +202,6 @@ class ConfigManager:
     def load_credentials(self):
         """Load credentials from a file or environment variables."""
         try:
-            with open("api.txt", "r") as f:
-                content = f.read()
-                self.astra_token = self.extract_value(content, 'ASTRA_DB_APPLICATION_TOKEN')
-                self.astra_db_id = self.extract_value(content, 'ASTRA_DB_ID')
-                self.groq_api_key = self.extract_value(content, 'groq_api_key')
-                self.sender_email = self.extract_value(content, 'SENDER_EMAIL')
-                self.sender_password = self.extract_value(content, 'SENDER_PASSWORD')
-        except FileNotFoundError:
             self.astra_token = os.getenv('ASTRA_DB_APPLICATION_TOKEN')
             self.astra_db_id = os.getenv('ASTRA_DB_ID')
             self.groq_api_key = os.getenv('GROQ_API_KEY')
@@ -247,14 +210,6 @@ class ConfigManager:
         except Exception:
             # Keep defaults as None if loading fails
             pass
-
-    def extract_value(self, content, key):
-        if f'{key}="' in content:
-            try:
-                return content.split(f'{key}="')[1].split('"')[0]
-            except IndexError:
-                return None
-        return None
 
 # -----------------------------------------------------------------------------
 # Document Processing
