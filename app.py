@@ -1493,7 +1493,7 @@ Automated Compliance Monitoring System"""
                             pdf_attachments[f"Revision_Details_{contract_name}.pdf"] = revision_details_pdf
                         
 
-                        self.email_system.send_alert(owner_email, subject, body)
+                        self.email_system.send_alert(owner_email, subject, body, pdf_attachments=pdf_attachments)
 
                     st.success(f"✅ Contract '{contract_name}' updated to revision {metadata['revision']}")
                     st.info(f"📋 Original metadata preserved: {len(original_parties)} parties, Sign date: {original_sign_date}")
