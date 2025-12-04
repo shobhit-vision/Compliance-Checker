@@ -3434,7 +3434,7 @@ def render_upload_new_contract(contract_manager, astra_vector_store, llm):
                         'last_updated': datetime.now().isoformat(),
                         'revision': 0,  # Start from 0
                         'needs_revision': False,
-                        'risk_score': risk_score,
+                        'risk_score': 0,
                         'owner_email': owner_email
                     }
 
